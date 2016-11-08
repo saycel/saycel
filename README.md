@@ -1,4 +1,5 @@
-SayCel's Community Cellular Network <--- Rhizomatica Community Cellular Network
+SayCel's Community Cellular Network  
+Rhizomatica Community Cellular Network
 ====
 
 Saycel Community Cellular Network
