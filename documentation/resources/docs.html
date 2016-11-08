@@ -1,0 +1,205 @@
+<h1>Open VPN</h1>
+
+<p>Here we set up OpenVPN on our Server Instance and on our Client/BSC (bsc3).  This is so we can run puppet from our server install and thus install openbsc/rai/rccn on our BSC.  Also this allows us to have a remote connection to the BSC...tunnel connection to 10.99.0.6 from our 10.99.0.1 server</p>
+<br>
+
+<h2>Open VPN on Server</h2>
+
+<br>
+<p>Server: root@162.243.238.142</p>
+<p>Password: sayc3l! </p>
+<p>We are setting up our VPN to be configured for multiple clients (look at openvpn docs.</p>
+<br>
+<ul>
+    <li>Install packages:sudo apt-get install openvpn easy-rsa</li>
+    <li>Generate Public Key Infrastructure with easy-rsa
+    	<ul>
+    	    <li>generate the master CA certificate and keys</li>
+    	    <li>generate server and client keys</li>
+    	</ul>
+    <li>create openvpn config file...heres the sample:</li>
+</ul>
+
+
+<h2>Install Rhizomatica Ubuntu Distrubution/Configure OpenVPN</h2>
+<br>
+<p>Rhizomatica has their own ubuntu distro....</p>
+<ul>
+    <li>https://github.com/ereedsanchez/saycel
+    </li>
+    <li> only the ubuntu installation</li>
+    
+    <li>scp the client certificates/keys and ca certificates</li>
+
+    <ul>
+        <li>ca.crt</li>
+        <li>bsc3.key</li>
+        <li>bsc3.crt</li>
+    </ul>
+
+    <li>sudo scp root@162.243.238.142:/etc/openvpn/easyrsa/keys/name-of-files /etc/openvpn/</li>
+
+    <li>create ect/openvpn/client.conf file....</li>
+</ul>
+
+
+<h2>Install Puppet on Remote Server</h2>
+<ul>
+    <li>wget https://apt.puppetlabs.com/puppetlabs-release-trusty.deb</li>
+    <li>sudo dpkg -i puppetlabs-release-trusty.deb
+</li>
+    <li>sudo apt-get update
+</li>
+    <li>sudo apt-get install puppetserver</li>
+    <li>In the [main] section of the master’s puppet.conf file, set the dns_alt_names setting to a comma-separated list of each hostname the master should be allowed to use: dns_alt_names = puppet</li>
+    <li>(start puppet) sudo puppet master --verbose --no-daemonize</li>
+
+    <p>in etc/puppets/environments mkdir for production</p>
+    <p>clone puppet repo</p>
+    <p>git submodule init</p>
+    <p>git submodule update</p>
+    <p>Change puppet.conf file to  point to these directories</p>
+
+
+
+    [main]
+logdir=/var/log/puppet
+vardir=/var/lib/puppet
+ssldir=/var/lib/puppet/ssl
+rundir=/var/run/puppet
+factpath=$vardir/lib/facter
+templatedir=$confdir/templates
+dns_alt_names=puppet
+environmentpath=$confdir/environments
+modulepath=/etc/puppet/environments/$environment/modules:/etc/puppet/modules:/usr/share/puppet/modules
+reports=none
+environment=production
+
+[master]
+# These are needed when the puppetmaster is run by passenger
+# and can safely be removed if webrick is used.
+ssl_client_header = SSL_CLIENT_S_DN
+ssl_client_verify_header = SSL_CLIENT_VERIFY
+parser=future
+
+
+
+
+</ul>
+
+<h2>Install Puppet on Client/BSC
+    <ul>
+        look at edwin docs
+        https://github.com/Rhizomatica/puppet
+
+
+    </ul>
+
+</h2>
+<h2>Puppet hell notes</h2>
+<p>
+    puppet didnt know where to find its production environment to send to client....
+    missing config files...
+  
+
+</p>
+
+
+
+
+<h2>errors</h2>
+<p>if openvpn goes down check var/log/openvpn</p>
+<p>Make sure openvpn and puppet master is running see... ps aux...sudo puppet master --verbose</p>
+<p>IF SHIT GOES WRONG RESTART EVERYTHING</p>
+phttps://visibilityspots.org/puppet-revoked-certificate.rst.html
+<p>Notice: Run of Puppet configuration client already in progress; skipping  (/var/lib/puppet/state/agent_catalog_run.lock exists)</p>
+
+<p></p>
+
+<h2>todo</h2>
+deamonize puppet
+
+
+heira file, controls bsc and riak 
+
+rccn install.py
+databases
+
+<!-- plugging into a bts -->
+thats where ports are defined for the bsc. 
+
+/etc/network/interface
+
+
+if a bsc is just a computer, why are we buying expensive bscs
+is openbsc
+
+
+param realm
+param register
+
+<h2>Configure free switch through bst.rhizomatica.org to make external calls or in vars.xml</h2>
+
+<ul>
+    <li>openvpn</li>
+    <li>puppet/rai</li>
+    <li>freeswitch</li>
+    <li>riak</li>
+</ul>
+
+
+
+
+<h2>get clients to talk to eachother through openvpn</h2>
+<ul>
+    <li>in openvpn/server.conf add line client-to-client</li>
+    <li></li>
+    <li></li>
+    <li></li>
+</ul>
+
+
+<h2>riak hell</h2>   
+<p>var/lib/riak</p>
+<p>...install distributed script</p>
+
+curl ipaddress:8089/buckets/hlr
+
+riak admin cluster join riak@newnode
+</p>
+
+<p> 
+    change to 10.99
+
+   rhizome/modules/auto_acl.conf.xml</p>
+
+sudo riak-admin cluster status
+
+
+1. var rhizomatica were no git repo...so puppet fucked up
+2. leftover riac config
+3. default acess control list.
+
+
+
+
+Run puppet cert generate <NAME> --dns_alt_names=<NAME 1>,<NAME 2>,<NAME 3> on your CA server, then manually copy the new master’s cert, private key, and public key into place on the new master. You will also need to give it a copy of the CA’s certificate and the CRL. See the reference page on the ssldir for more info about these files.
+
+
+make sure heira file is named appropriately 
+run puppet agent test like a million times
+python /var/rhizomatica/rccn/install.py
+  psql -f /var/rhizomatica/db/migration/011_location.sql
+
+
+  "  psql -f /var/rhizomatica/db/migration/011_location.sql
+  
+  nano /etc/default/puppet
+  
+  #change to  START=yes #make puppet auto start
+  
+  service puppet start"
+
+
+
+<p></p>

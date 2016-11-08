@@ -1,0 +1,58 @@
+// This command is to log into the Corn Island BSC via an SSH tunnel through our VPN
+
+ssh -C -L 10000:10.99.0.2:80 root@104.131.88.71
+
+// This command makes sure the above command
+netstat -na | grep 10000
+
+http://127.0.0.1:10000/rai
+
+---------------------------------
+
+phone phone bts <--> openbsc--->HLR
+LCR: Linux Call Record?
+CDR: Call Detail Record
+phone phone bts <--> openbsc--->LCR --> freeswitch --> VoIP
+by connecting to LCR VIA MNNCC Socket which can give sipp connection to free switch
+this lead to the birth of Rhizomatica 
+They made a python wrapper for the Free Switch API
+Deployment uses puppet: Deployment of BSC is automated using libops tool called puppet
+
+complicating
+
+
+
+
+RCCN
+RAPI
+
+
+
+Session: The call gets made
+Dialplan: Identifies the context the call goes through (internal local, outbound, internal, roaming).  The context determines how the program will process the call thru modules.
+
+Some shit in the config is a boolean vlue of 0 or 1, which will then turn on the more specific configuration option. 
+
+to make short codes you hve to add file called rccn/extensions/ext_THISISTHESHORTCODENUMBER.PY
+
+
+//Get the password to psql
+less config_values.py
+
+//start psql
+psql -U rhizomatica -h localhost
+//type password
+
+// if you want to see if subscriber number is in the database
+select * from subscribers where msisdn='27084127084140438';
+
+// delete erronous subscriber from database 
+delete from subscribers where msisdn='27084127084140438';
+
+
+//osmobb to demod 
+
+
+
+
+//

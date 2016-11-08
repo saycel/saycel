@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="documentation for rhizomatica/saycel setup">
+    <meta name="Dhruv Mehrotra, Edwin Reed-Sanchez" content="">
+
+    <title>SayCel Documentation</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  
+    <link href="css/stylesheet.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">SayCel</a>
+            </div>
+
+          
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a class="page-scroll" href="#page-top"></a>
+                    </li>
+
+                    <li>
+                        <a class="page-scroll" href="#ubuntu">Ubuntu</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#openVPNServer">OpenVpn Server</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#openVPNClient">OpenVpn Client</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#puppet">Puppet</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#puppetConfig">Puppet Configuration</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#rhizomatica">Rhizomatica</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="part-two.html">Part Two ( BTS )</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+    </nav>
+
+    <!-- Intro Section -->
+    <section id="intro" class="even-section">
+        <div class="container">
+            <div class="row">
+                <div class="big col-lg-12">
+                    <h1>Documentation</h1>
+                    <p>SayCel enables small and rural communities to own and operate their own cellular service utility and local 911. Our focus is on areas with inadequate or exorbitantly expensive services. We believe communications is a modern human right. This page is a working documentation for how our networks are built.</p>
+                 
+                    <dl class='dl-horizontal'>
+                      <dt>Ubuntu</dt>
+                      <dd>All of our BSC's have Ubuntu 12.04.5 installed.  This section walking you through the installation process.</dd>
+                      <dt>OpenVPN</dt>
+                      <dd>We use an OpenVPN server to remotely connect and configure our BSC's.  This section walks you through the VPN installation on the client (BSC) and server (openVPN)</dd>
+                      <dt>Puppet</dt>
+                      <dd>We use puppet to manage all of our BSC and to install all of the necessary packages</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ubuntu Section -->
+    
+    <section id="ubuntu" class="odd-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>Installing Ubuntu</h1>
+                    <p>All of our BSC's use version 12.04.5 of Ubuntu that we make into a bootable flash drive. Each drive uses a rhizomatica seed to configure Ubuntu with some OS configurations specific to BSC operation. The following steps require a Ubuntu machine:</p>
+                     <dl class='dl-horizontal'>
+                        <dt>Download</dt>
+                        <dd> <a href="http://releases.ubuntu.com/precise/ubuntu­12.04.5­server­amd64.iso">Ubuntu 12.04.5</a> </dd>
+                        <dt>Bootable Flash</dt>
+                        <dd>Make a bootable flash drive using the <a href="http://www.ubuntu.com/download/desktop/create-a-usb-stick-on-ubuntu">Startup Disk Creator from Ubuntu.</a></dd>
+                        <dt>Rhizomatica Seed</dt>
+                        <dd>Copy this <a href="https://github.com/Rhizomatica/puppet/blob/master/rhizomatica.seed">rhizomatica.seed</a> to the preseed directory folder inside the bootable flash drive.</dd>
+                        <dt>Replace Ubuntu Seed</dt>
+                        <dd>Replace the ubuntu-server.seed file with the rhizomatica.seed.  AKA delete the ubuntu-server.seed and rename the rhizomatica.seed file to ubuntu-server.seed
+                        </dd>
+                        <dt>Attach USB to BSC</dt>
+                        <dd>Attach the Bootable Flash to the BSC with a monitor mouse and keyboard.  Follow the installation instructions.
+                        </dd>
+                     </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="openVPNServer" class="even-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>OpenVPN Server</h1>
+                    <p>We use OpenVPN to configure and manage our BSC's remotely. OpenVPN must be installed on the BSC and on your remote server.  Your BSC must be connected to the internet. Our remote server is here: <b>162.243.238.142</b>.  First we will walkthrough the server installation process.  </p>
+                    <dl class='dl-horizontal'>
+                        <dt>SSH into your server</dt>
+                        <dd>We are using a digital ocean server running Ubuntu 14. ssh into your server by opening a terminal window and running ssh user@ip.address</dd>
+                        <dt>Install Packages</dt>
+                        <dd>Install openvpn and easyrsa with <b>sudo apt-get install openvpn easy-rsa</b>.</dd>
+                        <dt>Copy Server.conf</dt>
+                        <dd>Our server's instance of OpenVPN must have a config files called server.conf.  Copy an example server.conf file to /etc/openvpn/server.conf by running the command <b>gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf</b></dd>
+                        <dt>Edit server.conf</dt>
+                        <dd>Our server.conf file looks like <a href="./resources/server.conf">this</a></dd>
+                        <dt>Copy easyrsa scripts</dt>
+                        <dd>If there is no easyrsa folder within /etc/openvpn copy it over using <b>cp -r /usr/share/easy-rsa/ /etc/openvpn</b></dd>
+                        <dt>Key Storage</dt>
+                        <dd>Make a folder in which to store your keys.  It should be located here: /etc/openvpn/easy-rsa/keys. command: <b>mkdir /etc/openvpn/easy-rsa/keys</b></dd>
+                        <dt>DH Params</dt>
+                        <dd>generate the Diffie-Hellman parameters using: <b>openssl dhparam -out /etc/openvpn/easy-rsa/keys/dh2048.pem 2048</b></dd>
+                        <dt>Clear All</dt>
+                        <dd>Just to be safe and for future reference run <b>./clean-all</b> from the /etc/openvpn/easyrsa folder in order to run rm -rf on the everything inside of the keys folder.</dd>
+                        <dt>Certificate Authority</dt>
+                        <dd>Edit the vars file and source it with source ./vars . Build the certificate authority with <b>./build-ca</b>. </dd>
+                        <dt>Build Server Cert/Key</dt>
+                        <dd>run <b> ./build-key-server server</b> This command builds your key and certificate.  Leave all options blank by pressing enter.  Press 'y' to sign the certificates when prompted.</dd>
+                        <dt>Start and Test</dt>
+                        <dd>run <b>sudo service openvpn start</b>.  Then run <b>ifconfig</b>.  If you see an option for tun0, you have properly configured OPENVPN </dd>
+                     </dl>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="openVPNClient" class="odd-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>OpenVPN Client</h1>
+                    <p>OpenVPN must also be installed on the client.  Its important to note that we generate client certificates on the server and copy them to our BSC. <b>Our BSC's are currently 10.99.0.6 (bsc3) and 10.99.0.10 and (bsc4).  Our server tunnel is 10.99.0.1</b></p>
+                    <dl class='dl-horizontal'>
+                        <dt>Client Certificates</dt>
+                        <dd>THESE ARE CREATED ON THE SERVER AND COPIED TO THE BSC. When you’re finished on the server you should delete any client certificates. From /etc/openVPN/easy-rsa run <b>source vars</b> and <b>./build-key your_bsc_name</b>. Accept all the defaults and type 'y' to accept.</dd>
+                        <dt>Copy Certs</dt>
+                        <dd>Run <b>sudo scp root@162.243.238.142:/etc/openvpn/easyrsa/keys/name-of-files /etc/openvpn/</b>.  This command is run from your BSC. Files needed are the YourBscName.crt , YourBscName.key , ca.crt , and shared.key.</dd>
+                        <dt>Download OpenVPN</dt>
+                        <dd>On your BSC run <b>sudo apt-get install openvpn</b> </dd>
+                        <dt>Client.conf</dt>
+                        <dd>Copy the example client.conf file by running <b>sudo cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/</b>. Edit the client conf file to look like <a href="./resources/client.conf">this</a>. Change the necessary lines.</dd>
+                    </dl>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Puppet Section -->
+    <section id="puppet" class="even-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>Puppet</h1>
+                    <p>We use Puppet to manage our network of BSCs.  Not only does puppet set up and configure RIAK, RAI, FreeSwitch and more, it does the heavy lifting with regards to maintaining and updating BSCs.  It is a pain to set up and often times doesn't work.  With that said, when it does work, it saves us a incalculable amount of time. Puppet must be installed on the OpenVPN Server as well as on each BSC.  If Puppet is not configured correctly it can break everything. Do some research and proceed with caution.</p>
+                    <dl class='dl-horizontal'>
+                        <dt>Installation</dt>
+                        <dd>Log into your VPN and run <b>wget https://apt.puppetlabs.com/puppetlabs-release-trusty.deb</b> and <b>sudo dpkg -i puppetlabs-release-trusty.deb</b>. and <b>sudo apt-get update </b>and <b> sudo apt-get install puppetserver</b></dd>
+                        <dt>puppet.conf</dt>
+                        <dd>In /etc/puppet/puppet.conf configure your file to look like <a href="./resources/puppet.conf">this</a>.  This file sets up a dns_alt_name of puppet and configures your environment and environment path to be "production".  We will configure this next.</dd>
+                        <dt>Run Puppet</dt>
+                        <dd>sudo puppet master --verbose --no-daemonize . This will create the CA certificate and the puppet master certificate, with the appropriate DNS names included. Once it says Notice: Starting Puppet master version type ctrl-C to kill the process.</dd>
+                        <dt>Configure Environment</dt>
+                        <dd>In /etc/puppet/environments <b>git clone https://github.com/Rhizomatica/puppet.git</b>.  This will get you Rhizomatica's puppet configurations.</dd>
+                        <dt>Rename the environment</dt>
+                        <dd>Rename the repo you just cloned from "puppet" to "production"</dd>
+                        <dt>Git</dt>
+                        <dd>In your newly named repository run <b>git submodule init </b> and <b>git submodule update</b></dd>
+                        <dt>Install Puppet on BSC</dt>
+                        <dd>On your BSC run <b>sudo apt-get install puppet. Alternatively use the Wget method. $ wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
+$ sudo dpkg -i puppetlabs-release-precise.deb</b></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="puppetConfig" class="odd-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>Puppet Config</h1>
+                   
+                    <dl class='dl-horizontal'>
+                        <dt>Create CA Cert/Master Cert</dt>
+                        <dd> To create the CA certificate and the puppet master certificate, with the appropriate DNS names included run <b>sudo puppet master --verbose --no-daemonize</b>. Once it says Notice: Starting Puppet master version VERSION, type ctrl-C to kill the process.</dd>
+                        <dt></dt>
+                        <dt>BSC Certificates</dt>
+                        <dd> On the BSC, if you do not have a /var/lib/puppet/ssl directory create one withe the following folders: certificate_requests, certs, private, private_keys, public_keys</dd>
+                        <dt>Generate Certificates</dt>
+                        <dd>On the server run <b>puppet cert generate "first entry in etc/hosts on your bsc under 127.0.1.1"</b>.  This will create certificates with the appropriate names on your server in the /var/lib/puppet/ssl directory. </dd>
+                        <dt>Copy Certificates</dt>
+                        <dd>Manually copy the new master’s cert, private key, and public key into place on the BSC. You will also need to give it a copy of the CA’s certificate.  <b>For example consider (on the bsc): sudo scp root@162.243.238.142:/var/lib/puppet/ssl/public_keys/lb-selfnat-nyu.pem /var/lib/puppet/ssl/public_keys . </b>.  This code pulls the new public key from the server onto the bsc...you will need to do this to the private key and the cert.  Make sure you also copy the server's ca.pem into the certs directory.  Make sure you delete all of the copied certificates off of the server (except for ca.pem ). </dd>
+                        <dt>Start Puppet Master</dt>
+                        <dd>sudo puppet master --verbose --no-daemonize</dd>
+                        <dt>Start Puppet Agent</dt>
+                        <dd>sudo puppet agent --test.  This will fail a bunch, but just keep running it. Maybe like 10 times. If failing add [10.99.0.1 puppet] line to etc/hosts . </dd>
+                    </dl>
+                        
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="rhizomatica" class="even-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>Rhizomatica</h1>
+                    <p>While running puppet and Rhizomatica's install scripts you will encounter all sorts of errors, and you will need to fix them as you go. </p>
+                 
+                    <dl class='dl-horizontal'>
+                      <dt>Install.py</dt>
+                      <dd>Run <b>python /var/rhizomatica/rccn/install.py </b>.  This will certainly not work the first time. You will need to sorty through the errors to find out exatly whats wrong.  Obviously we will need to do some work on the install script.  Everytime you run the script you will need to drop the rhizomatica database. 
+                      </dd>
+                      <dt>Working with the Database</dt>
+                      <dd><b>su - postgres</b> to change your user to postgres. and psql to enter the interface
+                      </dd>
+                      <dt>Run Location Migration</dt>
+                      <dd>After you sort through the above errors, run  <b> psql -f /var/rhizomatica/db/migration/011_location.sql </b> 
+                      </dd>
+                      <dt>For errors with the db</dt>
+                      <dd> <b> DROP DATABASE Rhizomatica; CREATE DATABASE Rhizomatica;</b></dd>
+
+                      <dt>Networking</dt>
+                      <dd>Add <a href="./resources/interfaces.txt">these lines</a> to the network/interfaces 
+                      </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    <script>
+    $("#section3").css("background-image", "url(./images/victory.png)");  
+    </script>
+    </section>
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Scrolling Nav JavaScript -->
+    <script src="js/jquery.easing.min.js"></script>
+    <script src="js/scrolling-nav.js"></script>
+
+</body>
+
+</html>

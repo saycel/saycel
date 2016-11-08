@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="documentation for rhizomatica/saycel setup">
+    <meta name="Dhruv Mehrotra, Edwin Reed-Sanchez" content="">
+
+    <title>SayCel Documentation</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  
+    <link href="css/stylesheet.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">SayCel</a>
+            </div>
+
+          
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a class="page-scroll" href="#page-top"></a>
+                    </li>
+
+                    <li>
+                        <a class="page-scroll" href="#callsWithIn">Calls Within</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#callsOut">Calls From Our Network</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#callsIn"> Calls To Our Network</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="./part-two.html">Part Two ( BTS )</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="./part-one.html">Part One ( Setup )</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="./management.html">Management</a>
+                    </li>
+                    
+              
+                </ul>
+            </div>
+        </div>
+        
+    </nav>
+
+    <!-- Intro Section -->
+    <section id="intro" class="even-section">
+        <div class="container">
+            <div class="row">
+                <div class="big col-lg-12">
+                    <h1>Part Three</h1>
+                    <p>At this point you should have your BSCs and your BTSs setup.  In this document we will walk through setting up calls. Please look at <a href="./part-one">Part One</a> or <a href="./part-two">Part Two</a> for more info.</p>  <br>
+                    You will want to have a reverse tunnel setup so you can see the RAI interface for any network in the SayCel ecosystem.  The below commands will open up a tunnel on your computer on port 1000 directly to the rai web interface on the BSC through it's corresponding VPN. <br>
+                    <br>
+                    <ul>
+                        <li>Open Your Terminal</li>
+                        <li> <b>ssh -C -L 10000:THE IP ADDRESS of The BSC:80 root@THE IP ADDRESS of the BSC's VPN </b></li>
+                        <li>You will be asked for the VPN's password, once you enter it, keep the terminal window open</li>
+                        <li>go to a web browser and type in http://127.0.0.1:10000/rai/</li>
+                    </ul>
+                 <p>More info about this in the <a href="./management.html">management </a> section </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ubuntu Section -->
+    
+    <section id="callsWithIn" class="odd-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                   <h1>Calls Within</h1>
+                   <p>If your BSC and BTS are running properly and you have configured RAI and puppet this should be mostly automatic. 
+                     <dl class='dl-horizontal'>
+                     <dt>Configure</dt>
+                     <dd>Turn on your bsc and bts using the steps in <a href="./part-two.html">part two</a></dd>
+                     <dt>Access RAI</dt>
+                     <dd>If you are on the same network as your BSC, navigate to its IP address. If not setup a <a href="./management.html">Reverse Tunnel </a>to your BSC.  Login to the admin interface</dd>
+                    <dt>Connect to Network</dt>
+                    <dd>On your phone connect to the network.  On an android go to settings > more networks > mobile networks > network operators. Your phone will then search for available networks.  In a minute or so you should see the name of yours. Click it to connect.
+                    
+                    </dd>
+
+                    <dt>Get Subscriber Number</dt>
+                    <dd>Once you are connected call <b>*#100#</b> to find your subscriber number</dd>
+                    <dt>Provision</dt>
+                    <dd>In your web-browser that is connected to RAI log in and navigate to subscribers > provisioning. Add your name and subscriber number and press add. </dd>
+                    <dt>Add Credits</dt>
+                    <dd>In credits > add credits.  Add a few thousand credits to your account.</dd>
+                    <dt>Make Calls</dt>
+                    <dd>At this point you can make calls to other people within the network </dd>
+                   
+                   </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="callsOut" class="even-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                   <h1>Calls Out</h1>
+                   <p>Before beginning  make sure you are subscribed on your own network by following the steps above.  Also make sure you have registered with a VOIP Provider</p>    
+                   <dl class='dl-horizontal'>       
+                       <dt>VOIP Provider</dt>
+                       <dd> We use CallWithUs as our VOIP/DID providers.  In you Hiera file for your BSC (located on your vpn), make sure you have the proper configuration for your provider.  For instance in  <b>/etc/puppet/hieradata/yourbsc.yaml</b> make sure the section with the config settings for VoIP provider info has the correct username (fromuser should be the same), password, and DID numbers.</dd>
+                       <dt>Puppet</dt>
+                       <dd>On your BSC run puppet agent --test if you changed anything in your Hiera files</dd>
+                       <dt>Vars.xml</dt>
+                       <dd>On your BSC edit the <b>/etc/freeswitch/vars.xml</b> file. Edit the line that looks like: <b>X-PRE-PROCESS cmd="set" data="external_ip=192.168.1.11"</b>. Make sure the external_ip=xxx.xxx.x.xx is set to your ip address (ifconfig and look for eth0)
+                       </dd>
+                       <dt>FreeSwitch</dt>
+                       <dd>Open the free switch CLI by typing <b>fs_cli</b> on your bsc.
+                       </dd>
+                       <dt>Reload XML</dt>
+                       <dd>In the fs_cli run <b>reloadxml</b> to reconfigure freeswitch with the above new configuration</dd>
+                       <dt>Rescan profiles</dt>
+                       <dd>In the FS CLI Run <b>sofia profile external rescan</b> to rescan your external profiles.</dd>
+                       <dt>Restart Profile</dt>
+                       <dd>In the FS CLI Run <b>sofia profile external restart</b></dd>
+                       <dt>Restart Freeswitch</dt>
+                       <dd>Restart Freeswitch for good measure: <b>sudo sv freeswitch restart</b> </dd>
+                       <dt>sofia status</dt>
+                       <dd>If you have configured this correctly you should run <b>fs_cli</b> and then <b>sofia status</b>. If you see external profiles with your provider, you are in business </dt>
+                       <dt>Make a call</dt>
+                       <dd>Make a call to the outside world</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="callsIn" class="odd-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                   <h1>Calls In</h1>
+                   <p>Make sure you have registered with a VOIP provider before beginning this step. Once you have done the above steps, configuring dial in is relatively simple...though it took forever to figure out.</p>     
+                   <dl class='dl-horizontal'>
+                       <dt>VOIP Provider</dt>
+                       <dd> We use CallWithUs as our VOIP/DID providers.  In you Hiera file for your BSC (located on your vpn), make sure you have the proper configuration for your provider.  For instance in  <b>/etc/puppet/hieradata/yourbsc.yaml</b> make sure the section with the config settings for VoIP provider info has the correct username (fromuser should be the same), password, and DID numbers.</dd>
+                       <dt>Puppet</dt>
+                       <dd>On your BSC run puppet agent --test if you changed anything in your Hiera files</dd>       
+                       <dt>PSQL DID Table</dt>
+                       <dd>To Configure Dial In you need to add your VOIP account number to the DID Table. run <b>psql</b></dd>
+                       <dt>Add row to DID table</dt>
+                       <dd>INSERT INTO dids (provider_id, phonenumber, callerid) VALUES (1, YOURACCOUNTNUMBER, YOURACCOUNTNUMBER);
+                       </dd>
+                       <dt>REBOOT</dt>
+                       <dd> <b>sudo reboot</b> </dd>
+                       <dt>fs_cli</dt>
+                       <dd>Enter the freeswitch cli with <b>fs_cli</b> and make a call into your network. You should see the freeswitch trying to route to a gsm file.</dd>
+                       <dt>Add GSM Files</dt>
+                       <dd>Add your GSM files to /usr/share/freeswitch/sounds/en/us/callie</dd>
+
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Scrolling Nav JavaScript -->
+    <script src="js/jquery.easing.min.js"></script>
+    <script src="js/scrolling-nav.js"></script>
+
+</body>
+
+</html>

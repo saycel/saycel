@@ -1,0 +1,51 @@
+==================================OPEN CELLULAR=====================================
+
+OC Gen-1 Software
+
+	 
+	Architecture
+		Ubuntu/OSMONITB/NITB/OC-CLI <- built in open cell interface to check status of various modules etc.....
+	Radio Arch
+		BTS-RTOS to control the SDR ( think sys-util to control Litecel ).  It is Osmocom, so thats cool
+	
+	---------------------------
+	OBC ( out of band control ) 
+		<- alternative method to connect to base station when backhaul goes down.
+		<- Only meant for diagnosticas when backhaul goes down.
+		<- Secure direct connection to Tiva provessor 
+		<- packets sent are simple.  Substem (some base module) / Frame (status) / Data			
+		<- Packets are sent via satelite using an iridium chip. Shits mad expensive 
+		<- i think we need a dish to attach to the iridium chip...idunno
+	
+	--------------------------
+
+	open cellular is a radio hardware platfrom.
+	not a 2g or 4g bsc, just a platform. can do it all baby
+	optional customization, tune for your usecase
+	this shit is just like te best SDR ever
+	
+	------------------------------
+	
+	CCM ( comunity cellular manager )
+		<- suite of tools to operate and manage disparate community networks
+		<- billing/routing/maintenence
+		<- cloud system....rai like system runs on the cloud...
+		<- gsm controlller api 
+
+=====================================QUESTIONS======================================
+Questions :: Is this just a BTS or is this a NIB/BSC solution?
+
+How does the cloud admin system update the remote bts without backhaul?
+Who controlls ccm in papua? What if backhaul goes down, doeees that mean youc anot provision.
+
+If provisioning happens from somewhere far away 
+
+
+=======================================NAMES=========================================
+KASHIF
+emily mcmilin - radio
+
+CURTIS HEIMERL 
+
+
+

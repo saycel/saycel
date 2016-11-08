@@ -1,0 +1,34 @@
+##Oh-Shit##
+#SayCel FAQ for Errors#
+
+------------------------------------------------------------------------------
+For errors fetching packages from Sudo apt-get update
+Just remove all the content of /var/lib/apt/lists directory:
+
+sudo rm -rf /var/lib/apt/lists/*
+then run:
+
+sudo apt-get update
+-------------------------------------------------------------------------------
+For getting tabs to work in Ubuntu Server 12.04 use the package byobu
+byobu
+NOTE: Does not need to be run as root. If using Mac keyboard FN key + F(chosen number) key.
+
+F2 : Create a Tab
+F3 & F4: Switching Tabs
+F6: Detach session. Resume later - Very Powerful!!
+F7: Copy mode - allows you to scroll using arrow keys and search for keywords.
+F8: Rename window
+F9: Menu & Help
+exit: exits byobu
+-------------------------------------------------------------------------------
+For errors with the database:
+
+su - postgres
+psql
+DROP DATABASE Rhizomatica
+;
+CREATE DATABASE Rhizomatica
+;
+q
+exit postgres

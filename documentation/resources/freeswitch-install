@@ -1,0 +1,33 @@
+
+#add the repositories
+sudo apt-get update && sudo apt-get install -y curl
+curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | sudo apt-key add -
+echo "deb http://files.freeswitch.org/repo/deb/freeswitch-1.6/ jessie main" | sudo tee /etc/apt/sources.list.d/freeswitch.list
+sudo apt-get update
+
+# install dependencies
+sudo apt-get install -y libyuv-dev  libvpx2-dev  liblua5.2-dev libvpx2-dev libvpx2 zlib1g-dev yasm nasm libspeex1 libopus-dev libsndfile-dev autoconf automake devscripts gawk g++ git-core 'libjpeg-dev|libjpeg62-turbo-dev' libncurses5-dev 'libtool-bin|libtool' make python-dev gawk pkg-config libtiff5-dev libperl-dev libgdbm-dev libdb-dev gettext libssl-dev libcurl4-openssl-dev libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev libldns-dev libpq-dev
+
+#create the source folder
+mkdir ~/sources && mkdir /switch && cd ~/sources
+
+#get the code
+git clone -b v1.6 https://freeswitch.org/stash/scm/fs/freeswitch.git
+
+cd freeswitch
+
+# The -j argument spawns multiple threads to speed the build process
+./bootstrap.sh -j
+
+# if you want to add or remove modules from the build, edit modules.conf
+# add a module by removing '#' comment character at the beginning of the line
+# remove a module by adding the '#' comment character at the beginning of the line containing the name of the module to be skipped
+nano modules.conf
+
+
+#the prefix should be the absolute path to the switch directory, for me and for this installation it was/root/switch
+./configure --enable-core-pgsql-support --prefix="/root/switch/"  --with-java=/usr/lib/jvm/java-7-oracle/include/
+
+make && make install
+
+make cd-sounds-install cd-moh-install

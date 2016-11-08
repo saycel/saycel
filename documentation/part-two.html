@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="documentation for rhizomatica/saycel setup">
+    <meta name="Dhruv Mehrotra, Edwin Reed-Sanchez" content="">
+
+    <title>SayCel Documentation</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  
+    <link href="css/stylesheet.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">SayCel</a>
+            </div>
+
+          
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a class="page-scroll" href="#page-top"></a>
+                    </li>
+
+                    <li>
+                        <a class="page-scroll" href="#btsUSRP">BTS with USRP Setup</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#btsGSM">BTS with GSM 900</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#yaml"> YAML Configs</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="part-three.html">Part Three ( Calls )</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="part-one.html">Part One ( Setup )</a>
+                    </li>
+                    
+              
+                </ul>
+            </div>
+        </div>
+        
+    </nav>
+
+    <!-- Intro Section -->
+    <section id="intro" class="even-section">
+        <div class="container">
+            <div class="row">
+                <div class="big col-lg-12">
+                    <h1>Part Two</h1>
+                    <p>At this point you should have your BSC setup.  In this document we will walk through setting up the BTS with a USRP or a Nuran's GSM900.  It is important to note that to properly configure the GSM 900 in production setting we need to adjust some yaml configurations that puppet reads from on the server.</p>
+                    <p>For information about openVPN Puppet or the Rhizomatica software, refer to <a href="./part-one.html">part one</a> </p>
+                 
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ubuntu Section -->
+    
+    <section id="btsUSRP" class="odd-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                   <h1>USRP 1</h1>
+                   <p>For our USRP1 setup we use the Dell Mini as the USRP's connected BTS. We mostly use this configuration for testing.</p>
+                   <dl class='dl-horizontal'>
+                     <dt>Network Interfaces</dt>
+                     <dd>On the Dell Mini, change the /etc/network/interfaces file so the iface eth0 has a static IP address of 172.16.0.11.  We do this because of BSCs communicate with BSCs through the 172.16.0.0 IP space. <b>
+                    <br>
+                     auto eth0 <br>
+                     iface eth0 intet static <br>
+                     address 172.16.0.11 <br>
+                     netmask 255.255.255.0 <br>
+                     gateway 172.16.0.1
+                     </b> 
+                     </dd>
+                    <dt>osmobts-trx config</dt>
+                    <dd>Adjust the <b>/home/xdell0/gsm/osmo-bts-bsc4.cfg</b> file to look like <a href="./resources/osmo-bts-bsc4.cfg">this.</a>
+                    </dd>
+                    <dt>open bsc</dt>
+                    <dd>On the BSC adjust the <b>/etc/osmocom/osmobsc.cfg</b> to look like <a href="./resources/osmobsc.cfg">this</a></dd>
+                    <dt>USRP1</dt>
+                    <dd>Plug in USRP1 to eth0 of Dell Mini.  When you plug in the USRP1 you should hear the fan spinning. </dd>
+                    <dt>osmo-trx</dt>
+                    <dd>open a terminal on the Dell Mini and run <b>sudo osmo-trx</b></dd>
+                    <dt>osmobts-trx</dt>
+                    <dd>open another terminal on the Mini and run <b>sudo osmobts-trx -c /home/xdell0/gsm/osmo-bts-bsc4.cfg</b> </dd>
+                    <dt>restart BSC</dt>
+                    <dd><b>sudo reboot</b> </dd>
+                    <dt>debugging</dt>
+                    <dd>Check logs by running <b>tail -f /var/log/osmo-nitb/current</b> </dd>
+                   </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="btsGSM" class="even-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                   <h1>GSM900</h1>
+                   <p>Before beginning make sure you connect the BTS to your computer through one of its ethernet ports.  It does not matter which.  <b> you will have to create a shared ethernet connection: set ipv4 settings to "Shared to other computers" </b>
+
+                        </p>     
+                   <dl class='dl-horizontal'>       
+                       <dt>Get BTS IPs</dt>
+                       <dd><b>arp -n</b> will now show 2 new ips, probably on eth0 </dd>
+                       <dt>log into BTS:</dt>
+                       <dd>ssh root@AboveIPAddress</dd>
+                       <dt>Turn Off Power Amps!</dt>
+                       <dd> sbts2050-util sbts2050-pwr-enable 1 1 0  #1 1 0 = master slave amplifier
+                       </dd>
+                       <dt>Setup-bts.py</dt>
+                       <dd>Copy <a href="./resources/setup.py">this</a> file to your machine</dd>
+                       <dt>Make file exexcutable</dt>
+                       <dd> chmod +x setup-bts.py</dd>
+                       <dt>Install Fabric</dt>
+
+                       <dd>sudo apt-get install fabric</dd>
+                       <dt>Run Script</dt>
+                       <dd> On each new IP run. <b>./setup-bts.py -H IPADDRESSOFBTS setup </b> </dd>
+                       <dt>Plug BTS to BSC</dt>
+                       <dd>Connect an ethernet cable from any side of your BTS to port 2 of your BSC</dd>
+                       <dd>SSH Agent</dd>
+                       <dt>Start up your ssh agent:</dt>
+                        <dd><b>eval `ssh-agent -s`</b>. Run <b>ssh-copy-id root@172.16.0.11 </b>.  If you don't an id you will need to generate one with ssh-keygen.
+                       </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="yaml" class="odd-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                   <h1>Changing YAMLS for Stability</h1>
+                   <p>When puppet runs it will incorrectly update the osmo-nitb.cfg file on your BSC to change the BTS band to GSM850. Instead of manually changing it back everytime you want to run OSMO NITB you can cfix this problem from the server. The following steps detail how to do this.</p>     
+                   <dl class='dl-horizontal'>       
+                       <dt>change bands</dt>
+                       <dd>On the VPN in  <b>/etc/puppet/environments/production/modules/rhizo_base/templates/osmo-nitb.cfg.erb</b> change band 1 from "band GSM850" to band <%= @band1 %> .  change band 2 from "GSM850" to band <%= @band2 %>. This is standard ruby templating syntax. </dd>
+                       <dt>init.pp</dt>
+                       <dd>Indicate to puppet that where the variables for band 1 and 2 are by changing <b>/etc/puppet/environments/production/modules/rhizo_base/manifests/init.pp</b>.  In the BTS configration section add: <br>$band1 = hiera(‘rhizo::band1’)<br>
+                        $band2 = hiera(‘rhizo::band2')
+                        </dd>
+                       <dt>Edit YAML</dt>
+                       <dd>In <b>/etc/puppet/hieradata/saycel-bsc3.rhizomatica.org.yaml</b> ( or whatever YAML file you use for the BSC you are configuring ) add: <br>
+                        rhizo::band1: “GSM900" <br>
+                        rhizo::band2: “GSM900"
+                       </dd>
+                       <dt> Run Puppet </dt>
+                       <dd> <b>sudo puppet agent --test</b> </dd>
+
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Scrolling Nav JavaScript -->
+    <script src="js/jquery.easing.min.js"></script>
+    <script src="js/scrolling-nav.js"></script>
+
+</body>
+
+</html>
