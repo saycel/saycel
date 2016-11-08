@@ -1,0 +1,11 @@
+<?php
+
+/* Database connection information */
+
+$DB_USER = "rhizomatica";
+$DB_PASSWORD = "TestTest";
+$DB_DATABASE = "rhizomatica";
+$DB_HOST = "localhost";
+
+?>
+
