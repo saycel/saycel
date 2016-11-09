@@ -1,4 +1,4 @@
-SayCel and Community Cellular Network  
+SayCel Community Cellular Network  
 ====
 
 This is the public git repository for the all the code developed at Saycel, and is a fork of Rhizomatica Community Cellular Network. 
