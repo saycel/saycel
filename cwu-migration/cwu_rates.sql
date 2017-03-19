@@ -95,7 +95,7 @@ INSERT INTO rates(destination,prefix,cost) VALUES('Belgium-Premium','3244', 0.15
 INSERT INTO rates(destination,prefix,cost) VALUES('Belize','501',0.32);
 INSERT INTO rates(destination,prefix,cost) VALUES('Belize-Mobile','5016',0.32);
 INSERT INTO rates(destination,prefix,cost) VALUES('Benin','229',0.35);
-INSERT INTO rates(destination,prefix,cost) VALUES('Benin-Mobile','2299', 2.98);
+INSERT INTO rates(destination,prefix,cost) VALUES('Benin-Mobile','2299', 0.6);
 INSERT INTO rates(destination,prefix,cost) VALUES('Bermuda','1441',0.07);
 INSERT INTO rates(destination,prefix,cost) VALUES('Bermuda-Mobile','14413',0.07);
 INSERT INTO rates(destination,prefix,cost) VALUES('Bhutan','975',0.1);
