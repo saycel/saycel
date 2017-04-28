@@ -51,7 +51,7 @@ try:
 except psycopg2.DatabaseError as e:
     print 'Database error loading schema: %s' % e
     sys.exit(1)
-print 'Done'
+print 'D'
 
 print('Loading Rates... ').ljust(40),
 try:
