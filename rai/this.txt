@@ -1,0 +1,1 @@
+This is an important file that the bsc need to search for and find in order for updates to persist.  Its a quick fix but it works
