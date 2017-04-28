@@ -21,7 +21,7 @@ F7: Copy mode - allows you to scroll using arrow keys and search for keywords.
 F8: Rename window
 F9: Menu & Help
 exit: exits byobu
--------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
 For errors with the database:
 
 su - postgres
