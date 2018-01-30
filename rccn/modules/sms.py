@@ -21,7 +21,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ############################################################################
-
+#added by talal
+import fishline
+#end talal
 import sys
 sys.path.append("..")
 from config import *
@@ -51,6 +53,10 @@ class SMS:
 
         self.numbering = Numbering()
 
+        #added by Talal for applications
+        self.fishline = fishline.fishline();
+        self.summarization = fishline.summarization();
+        #end talal
 
     def receive(self, source, destination, text, charset, coding):
         self.charset = charset
@@ -59,8 +65,10 @@ class SMS:
         self.destination = destination
         self.text = text
 
-        sms_log.info('Received SMS: %s %s' % (source, destination))
+        sms_log.info('Received SMS: %s %s %s' % (source, destination, text))
         # SMS_LOCAL | SMS_INTERNAL | SMS_INBOUND | SMS_OUTBOUND | SMS_ROAMING
+
+	#self.send('20000',source,"Did you want to advertise"+self.text)
 
         try:
             # auth checks
@@ -101,6 +109,15 @@ class SMS:
 
             sms_log.info('Source_authorized: %s Destination_authorized: %s' % (str(source_authorized), str(destination_authorized)))
 
+            #added by Talal
+            if destination == '20000' or destination == '30000':
+                sms_log.info('Calling fishline receive funcation')
+                self.fishline.receive(source,destination,text)
+		#self.send('20000', source, "Did you want to advertise this:"+text)
+		
+            #elif destination == 30000:
+             #   self.summarization.receive(source,text)
+            # end Talal
 
             if not source_authorized and not self.numbering.is_number_internal(source):
                 sms_log.info('Sender unauthorized send notification message')
@@ -299,6 +316,26 @@ class SMS:
             self.send(config['smsc'], mysub[1], text)
             sms_log.debug('Broadcast message sent to %s' % mysub[1])
             time.sleep(1)
+    def broadcast_to_all_subscribers_from(self, text, btype,frm):
+        sub = Subscriber()
+        if btype == 'all':
+            subscribers_list = sub.get_all()
+        elif btype == 'notpaid':
+            subscribers_list = sub.get_all_notpaid()
+        elif btype == 'unauthorized':
+            subscribers_list = sub.get_all_unauthorized()
+        elif btype == 'extension':
+            subscribers_list = sub.get_all_5digits()
+
+        for mysub in subscribers_list:
+            self.send(frm, mysub[1], text)
+            sms_log.debug('Broadcast message sent to %s' % mysub[1])
+            time.sleep(1)
+
+    def send_broadcast_from(self, text, btype, frm):
+	sms_log.info('Send broadcast SMS to all subscribers. text: %s' %text)
+	t = Thread(target=self.broadcast_to_all_subscribers_from, args=(text, btype, frm, ))
+        t.start()
 
     def send_broadcast(self, text, btype):
         sms_log.info('Send broadcast SMS to all subscribers. text: %s' % text)
@@ -309,8 +346,9 @@ class SMS:
 if __name__ == '__main__':
     sms = SMS()
     try:
-        sms.send('10000', '66666248674', 'test')
-        #sms.receive('68820132107','777','3010#68820135624#10','UTF-8',2)
+        #sms.send('10000', '66666248674', 'test')
+	#sms.send('20000', '11221148054', 'subscribe')
+        sms.receive('11221148054','20000','subscribe','UTF-8',2)
         #sms.send_broadcasit('antani')
     except SMSException as e:
         print "Error: %s" % e

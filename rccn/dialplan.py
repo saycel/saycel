@@ -42,6 +42,7 @@ class Dialplan:
         self.subscriber = Subscriber()
         self.numbering = Numbering()
         self._n = self.numbering
+	self.calling_host = self.session.getVariable("sip_network_ip")
 
         self.billing = Billing()
         self.configuration = Configuration()
@@ -96,15 +97,14 @@ class Dialplan:
         Dialplan processing to route call to the right context
         """
         # TODO split this monster function.
-
         # the processing is async we need a flag
         processed = 0
-
+        log.info("Recieved Call")
+	log.info(self.calling_host)
         # emergency call check
-        if emergency_contact != '' and self.destination_number == 'emergency':
-            log.info(
-                    'Emergency call send call to emergency contact %s'
-                    % emergency_contact)
+        if self.destination_number == 'emergency':
+            log.info("here")
+            log.info(emergency_contact)
             processed = 1
             # check if emergency_contacts is a list of numbers
             dial_str = ''
@@ -113,14 +113,15 @@ class Dialplan:
                 last = emg_numbers[-1]
                 for emg in emg_numbers:
                     if emg == last:
-                        dial_str += 'sofia/internal/sip:'+emg+'@172.16.0.1:5050'
+                        dial_str += 'sofia/internal/sip:'+emg+'@127.0.0.1:5050'
                     else:
-                        dial_str += 'sofia/internal/sip:'+emg+'@172.16.0.1:5050,'
+                        dial_str += 'sofia/internal/sip:'+emg+'@127.0.0.1:5050,'
             else:
-                dial_str = 'sofia/internal/sip:'+emergency_contact+'@172.16.0.1:5050'
+                dial_str = 'sofia/internal/sip:'+emergency_contact+'@127.0.0.1:5050'
             
             self.session.setVariable('context','EMERGENCY')
-            self.session.execute('bridge', "{absolute_codec_string='GSM'}"+dial_str)
+	    log.info('test')
+            self.session.execute('bridge', "{absolute_codec_string='PCMA'}"+dial_str)
             
         # check if destination number is an incoming call
         # lookup dest number in DID table.
@@ -133,7 +134,12 @@ class Dialplan:
                     # send call to IVR execute context
                     self.session.setVariable('inbound_loop', '0')
                     self.context.inbound()
-            except NumberingException as e:
+            	if (self.calling_host == '138.68.99.252'):
+		    log.info("Incoming call from SIP server")
+		    processed = 1
+		    self.context.inbound()
+		    
+	    except NumberingException as e:
                 log.error(e)
 
             # check if calling number or destination number is a roaming subscriber
@@ -147,6 +153,9 @@ class Dialplan:
                 log.error(e)
                 # TODO: play message of calling number is not authorized to call
                 self.session.hangup()
+	    
+	    if (self.destination_number[:3] == '999'):
+		self.auth_context('webrtc') 
 
             try:
                 if (self._n.is_number_roaming(self.destination_number)):
@@ -164,8 +173,9 @@ class Dialplan:
             # check if destination number is an international call.
             # prefix with + or 00
             if (
-                self.destination_number[0] == '+' or (
-                    re.search(r'^00', self.destination_number) is not None)
+                self.destination_number[0] == '+' or 
+                (re.search(r'^00', self.destination_number) is not None)
+
             ) and processed == 0:
                 log.debug('Called number is an international call or national')
                 processed = 1
@@ -177,9 +187,14 @@ class Dialplan:
         if processed == 0:
             try:
                 log.info('Check if called number is local')
-                dest = self.destination_number
-                is_local_number = self._n.is_number_local(dest)
-                is_right_len = lambda num: len(num) == 11
+                if len( self.destination_number ) == 5:  
+			dest = saycel_prefix + self.destination_number
+			log.info('Called number has no prefix, but thats okay I am adding one')             
+		else:
+			dest = self.destination_number
+		
+		is_local_number = self._n.is_number_local(dest)
+		is_right_len = lambda num: len(num) == 11
 
                 if is_local_number and is_right_len(dest):
                     log.info('Called number is a local number')

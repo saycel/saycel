@@ -6,11 +6,11 @@ include ("../lib/jpgraph/jpgraph_date.php" );
 require_once('../modules/statistics.php');
 require_once('../modules/access_manager.php');
 
-$access = new AccessManager();
-$filename = basename($_SERVER['PHP_SELF']);
-if ($filename != "login.php") {
-        $access->checkAuth();
-}
+#$access = new AccessManager();
+#$filename = basename($_SERVER['PHP_SELF']);
+#if ($filename != "login.php") {
+#        $access->checkAuth();
+#}
 
 
 $period=$_GET['p'];

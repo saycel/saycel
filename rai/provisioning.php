@@ -32,7 +32,7 @@ function print_form($post_data,$errors) {
 				if (isset($imsi) && strlen($imsi) == 16) {
 					echo "&nbsp;&nbsp;Got IMSI: $imsi";
 				} else {
-					echo "&nbsp;&nbsp;Error getting IMSI please retry";
+					echo "&nbsp;&nbsp;Error getting IMSI please retry!";
 				}
 
 				$sub = new Subscriber();

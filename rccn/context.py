@@ -40,11 +40,16 @@ class Context:
         self.billing = modules[2]
         self.configuration = modules[3]
 
+    def webrtc(self):
+	log.debug('Sending Call to WebRTC')
+	self.session.execute('bridge', "{absolute_codec_string='PCMU',sip_cid_type=pid}sofia/gateway/webrtc/"+str(self.destination_number))
+
     def outbound(self):
         """ Outbound context. Calls to be sent out using the VoIP provider """
 
         self.session.setVariable('context', 'OUTBOUND')
-        subscriber_number = self.session.getVariable('caller_id_number')
+        subscriber_number = self.session.getVariable('caller_id_number')    
+
         # check subscriber balance
         log.debug('Check subscriber %s balance' % subscriber_number)
         try:
@@ -135,8 +140,13 @@ class Context:
             log.error(e)
                         
         # check subscriber balance if charge local call is configured
-        log.info('Send call to LCR')
-        self.session.execute('bridge', "{absolute_codec_string='GSM'}sofia/internal/sip:"+str(self.destination_number)+'@172.16.0.1:5050')
+        log.info('Send call to LCR local')
+	if len( self.destination_number ) == 5:
+		 dest = saycel_prefix + self.destination_number
+                 log.info(dest)
+	else:
+		 dest = self.destination_number
+        self.session.execute('bridge', "{absolute_codec_string='PCMA'}sofia/internal/sip:"+dest+'@127.0.0.1:5050')
         # in case of no answer send call to voicemail
         #log.info('No answer, send call to voicemail')
         #self.session.execute('set','default_language=en')
@@ -153,13 +163,22 @@ class Context:
         #    subscriber_number = self.numbering.get_did_subscriber(self.destination_number)
         #except NumberingException as e:
         #    log.error(e)
-        subscriber_number = None
-        if subscriber_number != None:
+        try:
+            log.debug('Check if Number is a Valid Local Number')
+            if (self.numbering.is_number_local(self.destination_number)):
+                subscriber_number = self.destination_number
+	    else:
+                subscriber_number = None
+        except NumberingException as e:
+            log.error(e)
+
+        
+	if subscriber_number != None:
             log.info('DID assigned to: %s' % subscriber_number) 
             try:
                 if self.subscriber.is_authorized(subscriber_number, 1) and len(subscriber_number) == 11:
                     log.info('Send call to internal subscriber %s' % subscriber_number)
-                    self.session.execute('bridge', "{absolute_codec_string='GSM'}sofia/internal/sip:"+subscriber_number+'@172.16.0.1:5050')
+                    self.session.execute('bridge', "{absolute_codec_string='PCMA'}sofia/internal/sip:"+subscriber_number+'@127.0.0.1:5050')
                 else:
                     log.info('Subscriber %s doesn\'t exists or is not authorized' % subscriber_number)
             except SubscriberException as e:
@@ -167,7 +186,10 @@ class Context:
                 # internal error
                 # TODO: announcement of general error
                 self.session.execute('playback','007_el_numero_no_es_corecto.gsm')
-        else:
+        elif (self.destination_number == 'pearllagoon'):
+ 	    dest = saycel_prefix + str(41969)
+	    self.session.execute('bridge', "{absolute_codec_string='GSM'}sofia/internal/sip:"+dest+'@127.0.0.1:5050')
+	else:
             # do not answer the call if the call has already being answered
             if self.session.getVariable('inbound_loop') != 1:
                 self.session.answer()
@@ -207,7 +229,7 @@ class Context:
                     self.session.setVariable('effective_caller_id_number', '%s' % self.session.getVariable('caller_id_number'))
                     self.session.setVariable('effective_caller_id_name', '%s' % self.session.getVariable('caller_id_name'))
     
-                    self.session.execute('bridge', "{absolute_codec_string='GSM'}sofia/internal/sip:"+dest_num+'@172.16.0.1:5050')
+                    self.session.execute('bridge', "{absolute_codec_string='PCMA'}sofia/internal/sip:"+dest_num+'@127.0.0.1:5050')
                 else:
                     log.info('Subscriber %s doesn\'t exists' % dest_num)
                     self.session.execute('playback','007_el_numero_no_es_corecto.gsm')
@@ -245,7 +267,7 @@ class Context:
                     # if current_bts is the same as local site, send the call to the local LCR
                     if site_ip == config['local_ip']:
                         log.info('Currentbts same as local site send call to LCR')
-                        self.session.execute('bridge', "{absolute_codec_string='GSM'}sofia/internal/sip:"+str(self.destination_number)+'@172.16.0.1:5050')
+                        self.session.execute('bridge', "{absolute_codec_string='PCMA'}sofia/internal/sip:"+str(self.destination_number)+'@127.0.0.1:5050')
                     else:
                         self.session.execute('bridge', "{absolute_codec_string='GSM,G729'}sofia/internalvpn/sip:"+self.destination_number+'@'+site_ip+':5040')
                 except NumberingException as e:
@@ -268,7 +290,7 @@ class Context:
         
                         log.info('Send call to LCR')
                         self.session.setVariable('context','ROAMING_LOCAL')
-                        self.session.execute('bridge', "{absolute_codec_string='GSM'}sofia/internal/sip:"+str(self.destination_number)+'@172.16.0.1:5050')
+                        self.session.execute('bridge', "{absolute_codec_string='PCMA'}sofia/internal/sip:"+str(self.destination_number)+'@127.0.0.1:5050')
                     else:
                         # local destination subscriber unauthorized
                         # TODO: play message destination unauthorized to receive call
@@ -309,7 +331,7 @@ class Context:
                 if site_ip == config['local_ip']:
                     log.info('Called number is roaming on our site send call to LCR')
                     self.session.setVariable('context','ROAMING_LOCAL')
-                    self.session.execute('bridge', "{absolute_codec_string='GSM'}sofia/internal/sip:"+str(self.destination_number)+'@172.16.0.1:5050')
+                    self.session.execute('bridge', "{absolute_codec_string='PCMA'}sofia/internal/sip:"+str(self.destination_number)+'@127.0.0.1:5050')
                 else:
                     log.info('Called number is roaming send call to current_bts: %s' % site_ip)
                     self.session.setVariable('context','ROAMING_INTERNAL')
