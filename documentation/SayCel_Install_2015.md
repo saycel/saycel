@@ -103,7 +103,7 @@ To Enable Puppet Agent to start on bootup edit:
     
     Give proper permissions to cron jobs by: ```chmod 644 /etc/cron.d/rhizomatica```.
 ###### 4. SSL Certification
- *First*, check that the dates of the the BSC and the remote server are in synch with ```date``` command.
+ *First*, check that the dates of the BSC and the remote server are in synch with ```date``` command.
 *Next*, on BSC, ```sudo -i``` to switch to root user.  Run ```puppet agent --test```. It will hang until the RSA certification is signed by the remote server.
 On the remote server, run ```puppet cert sign rhizo-bsc.rhizomatica.org``` and sign the certificate. 
 

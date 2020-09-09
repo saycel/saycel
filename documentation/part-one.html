@@ -219,7 +219,7 @@ $ sudo dpkg -i puppetlabs-release-precise.deb</b></dd>
                         <dd> To create the CA certificate and the puppet master certificate, with the appropriate DNS names included run <b>sudo puppet master --verbose --no-daemonize</b>. Once it says Notice: Starting Puppet master version VERSION, type ctrl-C to kill the process.</dd>
                         <dt></dt>
                         <dt>BSC Certificates</dt>
-                        <dd> On the BSC, if you do not have a /var/lib/puppet/ssl directory create one withe the following folders: certificate_requests, certs, private, private_keys, public_keys</dd>
+                        <dd> On the BSC, if you do not have a /var/lib/puppet/ssl directory create one with the following folders: certificate_requests, certs, private, private_keys, public_keys</dd>
                         <dt>Generate Certificates</dt>
                         <dd>On the server run <b>puppet cert generate "first entry in etc/hosts on your bsc under 127.0.1.1"</b>.  This will create certificates with the appropriate names on your server in the /var/lib/puppet/ssl directory. </dd>
                         <dt>Copy Certificates</dt>
